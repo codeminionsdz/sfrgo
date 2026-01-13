@@ -9,6 +9,13 @@ export const metadata: Metadata = {
     title: "About SAFRGO | Connecting Travelers with Trusted Agencies",
     description: "Making travel booking in Algeria transparent, safe, and accessible",
     type: "website",
+    images: ['/logo.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "About SAFRGO | Connecting Travelers with Trusted Agencies",
+    description: "Making travel booking in Algeria transparent, safe, and accessible",
+    images: ['/logo.png'],
   },
 }
 
