@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { createPublicClient } from "@/lib/supabase/public"
 
 export interface CuratedOffer {
   id: string
@@ -39,7 +39,7 @@ export interface CuratedAgency {
  */
 export async function getCuratedOffers(): Promise<CuratedOffer[]> {
   try {
-    const supabase = await createClient()
+    const supabase = createPublicClient()
 
     const { data, error } = await supabase
       .from("offers")
@@ -75,9 +75,9 @@ export async function getCuratedOffers(): Promise<CuratedOffer[]> {
     }
 
     // Filter to only include offers from agencies with active subscription
-    const validOffers = (data || []).filter((offer) => offer.agency !== null)
+    const validOffers = (data || []).filter((offer: any) => offer.agency !== null)
 
-    return validOffers.map((offer) => {
+    return validOffers.map((offer: any) => {
       const agency = offer.agency
       
       return {
@@ -113,7 +113,7 @@ export async function getCuratedOffers(): Promise<CuratedOffer[]> {
  */
 export async function getCuratedAgencies(): Promise<CuratedAgency[]> {
   try {
-    const supabase = await createClient()
+    const supabase = createPublicClient()
 
     const { data, error } = await supabase
       .from("agencies")
@@ -132,7 +132,7 @@ export async function getCuratedAgencies(): Promise<CuratedAgency[]> {
 
     // Get offer counts for each agency
     const agenciesWithCounts = await Promise.all(
-      (data || []).map(async (agency) => {
+      (data || []).map(async (agency: any) => {
         const { count } = await supabase
           .from("offers")
           .select("id", { count: "exact", head: true })
@@ -141,7 +141,7 @@ export async function getCuratedAgencies(): Promise<CuratedAgency[]> {
 
         // Generate deterministic pseudo-rating (4.0-4.9) until real review system exists
         // Using agency ID hash to ensure consistent rating across renders
-        const hash = agency.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+        const hash = agency.id.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0)
         const pseudoRating = 4.0 + (hash % 10) / 10 // Range: 4.0 - 4.9
 
         return {
@@ -170,7 +170,7 @@ export async function getCuratedAgencies(): Promise<CuratedAgency[]> {
  */
 export async function getPlatformStats() {
   try {
-    const supabase = await createClient()
+    const supabase = createPublicClient()
 
     const [agenciesResult, offersResult, reviewsResult] = await Promise.all([
       supabase.from("agencies").select("id", { count: "exact", head: true }).eq("verified", true),
