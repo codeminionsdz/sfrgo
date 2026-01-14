@@ -63,7 +63,6 @@ export function SignupForm() {
       email: formData.email,
       password: formData.password,
       options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || "https://safrgo.online"}/auth/callback`,
         data: {
           name: formData.name,
           role: accountType,
@@ -111,9 +110,12 @@ export function SignupForm() {
           })
         }
       }
+
+      // Redirect to appropriate dashboard immediately
+      const redirectTo = accountType === "agency" ? "/agency" : "/traveler"
+      router.push(redirectTo)
     }
 
-    router.push("/auth/signup-success")
     setIsLoading(false)
   }
 

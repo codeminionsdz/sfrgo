@@ -71,7 +71,7 @@ export function useAuth() {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event: string, session: any) => {
       if (event === "SIGNED_IN" && session?.user) {
         setUser(session.user as AuthUser)
         await fetchUserData(session.user.id)
@@ -138,8 +138,6 @@ export function useAuth() {
         email: data.email,
         password: data.password,
         options: {
-          emailRedirectTo:
-            process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/callback`,
           data: {
             name: data.name,
             role: data.role,
@@ -155,12 +153,20 @@ export function useAuth() {
         }
       }
 
-      // Redirect to success page
-      router.push("/auth/signup-success")
+      if (authData.user) {
+        // Auto-login and redirect to dashboard immediately
+        const redirectTo = data.role === "agency" ? "/agency" : "/traveler"
+        router.push(redirectTo)
+        
+        return {
+          success: true,
+          redirectTo,
+        }
+      }
 
       return {
-        success: true,
-        redirectTo: "/auth/signup-success",
+        success: false,
+        error: "Signup failed",
       }
     },
     [supabase, router],
