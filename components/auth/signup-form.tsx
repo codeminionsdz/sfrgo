@@ -78,38 +78,8 @@ export function SignupForm() {
     }
 
     if (data.user) {
-      // التحقق من إنشاء البروفايل
-      const { data: profile } = await supabase.from("profiles").select("id").eq("id", data.user.id).single()
-
-      if (!profile) {
-        // إنشاء البروفايل يدوياً إذا لم يتم إنشاؤه تلقائياً
-        await supabase.from("profiles").insert({
-          id: data.user.id,
-          email: formData.email,
-          name: formData.name,
-          role: accountType,
-        })
-
-        // إنشاء الوكالة إذا كان النوع وكالة
-        if (accountType === "agency") {
-          const slug = formData.agencyName
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, "-")
-            .replace(/^-|-$/g, "")
-
-          await supabase.from("agencies").insert({
-            owner_id: data.user.id,
-            name: formData.agencyName,
-            slug: slug,
-            description: "Welcome to our travel agency",
-            location: "Not specified",
-            status: "pending",
-            subscription_status: "none",
-            offer_limit: 0,
-            offer_count: 0,
-          })
-        }
-      }
+      // انتظر قليلاً للسماح بتنفيذ الـ trigger
+      await new Promise(resolve => setTimeout(resolve, 1000))
 
       // Redirect to appropriate dashboard immediately
       const redirectTo = accountType === "agency" ? "/agency" : "/traveler"

@@ -27,13 +27,20 @@ BEGIN
       slug,
       description,
       location,
+      rating,
+      review_count,
+      verified,
+      specialties,
+      follower_count,
+      offer_count,
+      response_time,
+      joined_date,
       status,
       subscription_status,
       subscription_plan,
       offer_limit,
-      offer_count,
-      joined_date,
-      created_at
+      created_at,
+      updated_at
     )
     VALUES (
       NEW.id,
@@ -41,12 +48,19 @@ BEGIN
       lower(regexp_replace(COALESCE(NEW.raw_user_meta_data->>'agency_name', 'agency-' || substr(NEW.id::text, 1, 8)), '[^a-z0-9]+', '-', 'gi')),
       'Welcome to our travel agency',
       'Not specified',
+      0,
+      0,
+      FALSE,
+      '{}',
+      0,
+      0,
+      '< 24 hours',
+      CURRENT_DATE,
       'pending',
       'none',
       NULL,
       0,
-      0,
-      CURRENT_DATE,
+      NOW(),
       NOW()
     )
     ON CONFLICT (owner_id) DO NOTHING;

@@ -12,34 +12,8 @@ export async function GET(request: NextRequest) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error && data.user) {
-      // Fetch user profile to check role and handle agency creation
+      // Fetch user profile to check role
       const { data: profile } = await supabase.from("profiles").select("role").eq("id", data.user.id).single()
-
-      // If user is an agency, check if agency exists and create if not
-      if (profile?.role === "agency") {
-        const { data: existingAgency } = await supabase
-          .from("agencies")
-          .select("id")
-          .eq("owner_id", data.user.id)
-          .single()
-
-        if (!existingAgency) {
-          const agencyName = data.user.user_metadata?.agency_name || "My Agency"
-          const slug = agencyName
-            .toLowerCase()
-            .replace(/\s+/g, "-")
-            .replace(/[^a-z0-9-]/g, "")
-
-          await supabase.from("agencies").insert({
-            owner_id: data.user.id,
-            name: agencyName,
-            slug: `${slug}-${Date.now()}`,
-            status: "pending",
-            subscription_status: "none",
-            offer_limit: 0,
-          })
-        }
-      }
 
       // Redirect based on role
       let redirectTo = "/traveler"
